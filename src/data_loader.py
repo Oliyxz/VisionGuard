@@ -34,12 +34,31 @@ def get_cifar100_dataloaders(data_dir='./data', batch_size=64, num_workers=2):
 
 def get_tiny_imagenet_dataloaders(data_dir='./data/tiny-imagenet-200', batch_size=64, num_workers=2):
     """
-    Placeholder for Tiny-ImageNet dataloader.
-    Note: Tiny-ImageNet requires downloading from a custom source and uses ImageFolder.
+    Load Tiny-ImageNet dataset using ImageFolder.
+    Assumes the dataset is downloaded and the validation set is restructured.
     """
-    # Assuming dataset is already downloaded and extracted at data_dir
     train_dir = os.path.join(data_dir, 'train')
     val_dir = os.path.join(data_dir, 'val')
     
-    # Needs custom handling for validation set structure in tiny-imagenet
-    pass
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(64, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    ])
+    
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    ])
+    
+    if not os.path.exists(train_dir) or not os.path.exists(val_dir):
+        raise FileNotFoundError(f"Tiny-ImageNet directories not found at {data_dir}. Please run download_tiny_imagenet.py first.")
+        
+    trainset = torchvision.datasets.ImageFolder(root=train_dir, transform=transform_train)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    
+    testset = torchvision.datasets.ImageFolder(root=val_dir, transform=transform_test)
+    testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    
+    return trainloader, testloader
