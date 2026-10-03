@@ -15,6 +15,22 @@ This project investigates the intersection of machine learning and cyber securit
 2. Activate the virtual environment.
 3. Install dependencies: `pip install -r requirements.txt`
 
+### Dataset Preparation
+Because of their size, datasets are not included in the version control history. You must download them manually to run the experiments.
+1. Download the **Tiny ImageNet** dataset: [http://cs231n.stanford.edu/tiny-imagenet-200.zip](http://cs231n.stanford.edu/tiny-imagenet-200.zip)
+2. Extract the downloaded zip file.
+3. Place the extracted folder into the `data/` directory so the path resolves as `data/tiny-imagenet-200/`.
+
+## Usage
+- **Generate Attack Results:** Run the script to evaluate models and generate adversarial results.
+  ```bash
+  python src/generate_results.py
+  ```
+- **Launch Dashboard:** View the generated results via the interactive Streamlit dashboard.
+  ```bash
+  streamlit run dashboard/app.py
+  ```
+
 ## Phases
 1. Environment setup and data loading.
 2. Baseline accuracy evaluation.
