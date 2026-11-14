@@ -1,39 +1,26 @@
-# VisionGuard: Model Quantisation & Adversarial Resilience
+# VisionGuard
 
-## Overview
-This project investigates the intersection of machine learning and cyber security by evaluating how post-training quantisation affects the structural resilience of Vision Transformers (ViT) and Convolutional Neural Networks (ConvNeXt).
+Code for **"VisionGuard: Evaluating the Adversarial Robustness of Post-Training Quantised Vision Transformers and ConvNeXt Models"**.
 
-## Structure
-- `src/`: Core Python modules for data loading, model setup, quantisation, and attacks.
-- `dashboard/`: Streamlit interactive dashboard.
-- `notebooks/`: Jupyter notebooks for exploratory analysis.
-- `data/`: Datasets (CIFAR-100, Tiny-ImageNet).
-- `models/`: Downloaded and quantised models.
+It measures how FP16 and INT8 post-training quantisation change the adversarial vulnerability of ViT-S/16 and ConvNeXt-T on CIFAR-100 and Tiny-ImageNet, using FGSM and PGD (ℓ∞) in three threat models (A0 FP32 white-box, A1 quantised white-box, A2 transfer from FP32), with gradient-masking diagnostics, tipping points and latency.
 
-## Setup
-1. Create a Python virtual environment: `python -m venv venv`
-2. Activate the virtual environment.
-3. Install dependencies: `pip install -r requirements.txt`
+## Contents
+| File | Purpose |
+|---|---|
+| `visionguard.py` | The experiment library: fine-tuning, INT8 PTQ (FX graph mode, oneDNN), attacks, diagnostics, efficiency, analysis |
+| `VisionGuard_experiments.ipynb` | Colab notebook that configures and runs the study end to end |
+| `requirements.txt` | Package versions used for the reported results |
 
-### Dataset Preparation
-Because of their size, datasets are not included in the version control history. You must download them manually to run the experiments.
-1. Download the **Tiny ImageNet** dataset: [http://cs231n.stanford.edu/tiny-imagenet-200.zip](http://cs231n.stanford.edu/tiny-imagenet-200.zip)
-2. Extract the downloaded zip file.
-3. Place the extracted folder into the `data/` directory so the path resolves as `data/tiny-imagenet-200/`.
+## How to run
+1. Open `VisionGuard_experiments.ipynb` in Google Colab with a GPU runtime (an A100 was used).
+2. Run Sections 1–2 (set `MODE = "quick"` first for a dry run), then Section 3.
+3. Section 5 builds the tables and plots; Section 6 runs the FP16-underflow and APGD checks.
 
-## Usage
-- **Generate Attack Results:** Run the script to evaluate models and generate adversarial results.
-  ```bash
-  python src/generate_results.py
-  ```
-- **Launch Dashboard:** View the generated results via the interactive Streamlit dashboard.
-  ```bash
-  streamlit run dashboard/app.py
-  ```
+All results, fine-tuned weights and calibrated quantisation scales are saved to Google Drive after every unit of work, so interrupted runs resume where they stopped. Per-sample predictions for every attack are stored as `.npz`, so every statistic can be recomputed without re-attacking.
 
-## Phases
-1. Environment setup and data loading.
-2. Baseline accuracy evaluation.
-3. Post-training static quantisation to INT8.
-4. Adversarial attack generation (FGSM, PGD).
-5. Data visualisation dashboard.
+## Notes
+* INT8 runs real integer kernels on CPU through PyTorch FX graph mode (oneDNN backend); gradients for A1 come from a fake-quantised proxy that shares scales with the integer model.
+* FP16 white-box attacks use loss scaling (`FP16_LOSS_SCALE`), because unscaled half-precision gradients underflow and the attack silently fails.
+
+## Citation
+<!-- add the paper reference here after publication -->
