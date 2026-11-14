@@ -1,8 +1,0 @@
-torch>=2.0.0
-torchvision
-torchattacks
-pandas
-streamlit
-matplotlib
-h5py
-tqdm
